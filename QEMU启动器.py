@@ -14,7 +14,8 @@ try:
         [2]创建虚拟机
         [3]运行虚拟机
         [4]删除虚拟机
-        [5]退出
+        [5]修改虚拟机参数
+        [6]退出
         ----------------------------------------------------------------------------------------
         """
         )
@@ -29,6 +30,9 @@ try:
             disk = input('请输入虚拟磁盘大小(GB)：')
             cd = input('请输入光盘路径：')
             memory = input('请输入内存大小(MB)：')
+            cpu = input('请输入架构：')
+            kvm = input('是否启用KVM？(y/n)：')
+            
             os.system('qemu-img create -f qcow2 ' + name + '.qcow2 ' + disk + 'G')
             with open('VM配置文件/vms', 'w+') as i:
                 try:
@@ -38,8 +42,15 @@ try:
                 _i.append(name)
                 i.write(str(_i))
             with open('VM配置文件/' + name, 'w+') as i:
-                i.write(str([cd, memory]))
-            os.system('qemu-system-x86_64 -hda ' + name + '.qcow2 -cdrom ' + cd + ' -m ' + memory + 'M --enable-kvm')
+                if kvm == 'y':
+                    
+                    i.write(str([cd, memory, cpu, True]))
+                else:
+                    i.write(str([cd, memory, cpu, False]))
+            if kvm == 'y':
+                os.system('qemu-system-' + cpu + ' -hda ' + name + '.qcow2 -cdrom ' + cd + ' -m ' + memory + 'M --enable-kvm')
+            else:
+                os.system('qemu-system-' + cpu + ' -hda ' + name + '.qcow2 -cdrom ' + cd + ' -m ' + memory + 'M')
         elif opt == '3':
             clean()
             with open('VM配置文件/vms', 'r') as i:
@@ -55,7 +66,13 @@ try:
                 name = vmlist[no_]
                 cd = i_[0]
                 memory = i_[1]
-            os.system('qemu-system-x86_64 -hda ' + name + '.qcow2 -cdrom ' + cd + ' -m ' + memory + 'M')
+                cpu = i_[2]
+                kvm = i_[3]
+                if kvm:
+                    os.system('qemu-system-' + cpu + ' -hda ' + name + '.qcow2 -cdrom ' + cd + ' -m ' + memory + 'M --enable-kvm')
+                else:
+                    os.system('qemu-system-' + cpu + ' -hda ' + name + '.qcow2 -cdrom ' + cd + ' -m ' + memory + 'M')
+
 
         elif opt == '4':
             clean()
@@ -83,7 +100,28 @@ try:
                 i.write(str(_i))
             print('删除成功！')
         elif opt == '5':
-            exit()
+            clean()
+            with open('VM配置文件/vms', 'r') as i:
+                vmlist = eval(i.read())
+            print('虚拟机列表：')
+            _ = 0
+            for i in vmlist:
+                print(_, '|', i)
+                _ += 1
+            no_ = int(input('请输入编号：'))
+            disk = input('请输入虚拟磁盘大小(GB)：')
+            cd = input('请输入光盘路径：')
+            memory = input('请输入内存大小(MB)：')
+            cpu = input('请输入架构：')
+            kvm = input('是否启用KVM？(y/n)：')
+            with open('VM配置文件/' + vmlist[no_], 'w+') as i:
+                if kvm == 'y':
+                    i.write(str([cd, memory, cpu, True]))
+                else:
+                    i.write(str([cd, memory, cpu, False]))
+            print('修改成功！')
+        elif opt == '6':
+            exit()    
         else:
             print('没有这个选项！（按Enter继续）')
             input()
