@@ -8,7 +8,7 @@ try:
         clean()
         print(
         """
-        QEMU启动器 version Alpha
+        QEMU启动器 version 0.2
         ----------------------------------------------------------------------------------------
         [1]安装QEMU(不兼容Windows)
         [2]创建虚拟机
@@ -92,9 +92,12 @@ try:
                 vmlist = eval(i.read())
             os.remove('VM配置文件/' + vmlist[no_])
             os.remove(vmlist[no_] + '.qcow2')
-            with open('VM配置文件/vms', 'w+') as i:
-                
-                _i = eval(i.read())
+
+            with open('VM配置文件/vms', 'r+') as i:
+                try:
+                    _i = eval(i.read())
+                except SyntaxError:
+                    _i = []
 
                 _i.remove(vmlist[no_])
                 i.write(str(_i))
@@ -128,6 +131,7 @@ try:
 except Exception as e:
     clean()
     print('发生错误，错误代码：', e)
-    input('按Enter继续')
+    if input('按Enter继续') == 'stderr':
+        raise
     exit()        
                     
