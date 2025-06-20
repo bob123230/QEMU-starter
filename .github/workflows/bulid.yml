@@ -1,0 +1,15 @@
+name: Build for Windows/Linux
+on: [push]
+jobs:
+  build-win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pyinstaller && pyinstaller --onefile your_script.py
+      - uses: actions/upload-artifact@v3  # 自动上传生成的可执行文件
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip3 install pyinstaller && pyinstaller --onefile your_script.py
+      - uses: actions/upload-artifact@v3  # 自动上传生成的可执行文件
