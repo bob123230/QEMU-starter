@@ -5,11 +5,21 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pip install pyinstaller && pyinstaller --onefile QEMU启动器.py
+      - run: pip install pytest pyinstaller
+      - run: pytest
+      - run: pyinstaller --onefile QEMU启动器.py
       - uses: actions/upload-artifact@v3  # 自动上传生成的可执行文件
+        with:
+          name: win-artifact
+          path: dist/QEMU启动器.exe
   build-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pip3 install pyinstaller && pyinstaller --onefile QEMU启动器.py
+      - run: pip3 install pytest pyinstaller
+      - run: pytest
+      - run: pyinstaller --onefile QEMU启动器.py
       - uses: actions/upload-artifact@v3  # 自动上传生成的可执行文件
+        with:
+          name: linux-artifact
+          path: dist/QEMU启动器
